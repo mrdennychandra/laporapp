@@ -29,3 +29,4 @@ public interface LaporDao {
     @Query("SELECT COUNT(*) from lapor")
     Integer count();
 }
+
