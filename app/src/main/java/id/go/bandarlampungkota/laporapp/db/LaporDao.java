@@ -1,6 +1,7 @@
 package id.go.bandarlampungkota.laporapp.db;
 
-import androidx.lifecycle.LiveData;
+import java.util.List;
+
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -12,7 +13,7 @@ import id.go.bandarlampungkota.laporapp.model.Lapor;
 public interface LaporDao {
 
     @Query("SELECT * FROM lapor")
-    LiveData<Lapor> getAll();
+    List<Lapor> getAll();
 
     @Query("SELECT * FROM lapor WHERE id=:id")
     Lapor getById(Long id);
