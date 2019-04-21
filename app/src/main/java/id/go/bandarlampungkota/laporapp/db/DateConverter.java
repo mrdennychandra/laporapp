@@ -1,6 +1,5 @@
 package id.go.bandarlampungkota.laporapp.db;
 
-
 import java.util.Date;
 import androidx.room.TypeConverter;
 
