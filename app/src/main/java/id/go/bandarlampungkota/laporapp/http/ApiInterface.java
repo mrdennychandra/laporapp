@@ -17,7 +17,9 @@ public interface ApiInterface {
                         @Part("keterangan") RequestBody keterangan,
                         @Part("waktu") RequestBody waktu,
                         @Part("pil") RequestBody pil,
-                        @Part("type") RequestBody type
+                        @Part("type") RequestBody type,
+                        @Part("latitude") RequestBody latitude,
+                        @Part("longitude") RequestBody longitude
     );
 }
 

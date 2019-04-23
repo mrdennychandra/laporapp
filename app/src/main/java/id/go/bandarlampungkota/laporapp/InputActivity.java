@@ -62,6 +62,9 @@ public class InputActivity extends AppCompatActivity {
     Lapor lapor;
     private ProgressDialog mProgressDialog;
     private ApiInterface api;
+    GPSTracker gps;
+    double latitude;
+    double longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +88,8 @@ public class InputActivity extends AppCompatActivity {
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         }
 
         if (Build.VERSION.SDK_INT >= 24) {
@@ -95,6 +99,20 @@ public class InputActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        gps = new GPSTracker(InputActivity.this);
+        // check if GPS enabled
+        if(gps.canGetLocation()){
+            latitude = gps.getLatitude();
+            longitude = gps.getLongitude();
+            Toast.makeText(this,"latitude = " + latitude + "longitude=" + longitude,Toast.LENGTH_SHORT).show();
+            // \n is for new linToast.makeText(getApplicationContext(), "Your Location is - \nLat: "+ latitude + "\nLong: " + longitude, Toast.LENGTH_LONG).show();
+        }else{
+            // can't get location
+            // GPS or Network is not enabled
+            // Ask user to enable GPS/network in settings
+            gps.showSettingsAlert();
         }
 
         if (lapor != null) {
@@ -139,6 +157,8 @@ public class InputActivity extends AppCompatActivity {
                     RadioButton selected = (RadioButton) findViewById(rbGroupp.getCheckedRadioButtonId());
                     lapor.pil = selected.getText().toString();
                     lapor.waktu = new Date();
+                    lapor.latitude = latitude;
+                    lapor.longitude = longitude;
                     AppDatabase.getInstance(getApplicationContext()).laporDao().insert(lapor);
                 } else {
                     lapor.sent = 0;
@@ -148,6 +168,8 @@ public class InputActivity extends AppCompatActivity {
                     RadioButton selected = (RadioButton) findViewById(rbGroupp.getCheckedRadioButtonId());
                     lapor.pil = selected.getText().toString();
                     lapor.waktu = new Date();
+                    lapor.latitude = latitude;
+                    lapor.longitude = longitude;
                     AppDatabase.getInstance(getApplicationContext()).laporDao().update(lapor);
                 }
 
@@ -322,13 +344,15 @@ public class InputActivity extends AppCompatActivity {
                 new SimpleDateFormat("dd-mm-yyyy").format(new Date()));
         RequestBody pil = RequestBody.create(MediaType.parse("text/plain"), lapor.pil);
         RequestBody type = RequestBody.create(MediaType.parse("text/plain"), "image");
+        RequestBody lat = RequestBody.create(MediaType.parse("text/plain"),String.valueOf(lapor.latitude));
+        RequestBody lng = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(lapor.longitude));
         mProgressDialog = new ProgressDialog(InputActivity.this);
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.setMessage("Mengirim data...");
         if (!mProgressDialog.isShowing()) {
             mProgressDialog.show();
         }
-        Call<String> call = api.upload(body, lokasi, keterangan, waktu, pil,type);
+        Call<String> call = api.upload(body, lokasi, keterangan, waktu, pil,type,lat,lng);
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String>

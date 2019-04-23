@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -19,5 +20,7 @@ public class Lapor implements Serializable {
     public String lokasi;
     public String pil;//pileg pilpres
     public int sent;
+    public double latitude;
+    public double longitude;
 }
 
